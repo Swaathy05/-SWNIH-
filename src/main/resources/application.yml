@@ -1,0 +1,189 @@
+spring:
+  application:
+    name: smart-web-notification-intelligence-hub
+  
+  # Database Configuration (H2 for development)
+  datasource:
+    url: jdbc:h2:mem:swnih_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
+    username: sa
+    password: password
+    driver-class-name: org.h2.Driver
+    
+    # HikariCP Connection Pooling (5-20 connections as per requirements)
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 1200000
+      pool-name: SwnihHikariPool
+      
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+        use_sql_comments: true
+    open-in-view: false
+    
+  # H2 Console for development
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+    
+  # Security Configuration
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: YOUR_GOOGLE_CLIENT_ID_HERE
+            client-secret: YOUR_GOOGLE_CLIENT_SECRET_HERE
+            scope:
+              - openid
+              - profile
+              - email
+              - https://www.googleapis.com/auth/gmail.readonly
+            redirect-uri: "http://localhost:8080/api/gmail/oauth/callback"
+            authorization-grant-type: authorization_code
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
+
+# Encryption Configuration (for OAuth tokens)
+encryption:
+  secret-key: MySecretEncryptionKey123456789012
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:your-jwt-secret-key-should-be-at-least-256-bits-long}
+  expiration: 86400000 # 24 hours in milliseconds
+
+# Gmail API Configuration
+gmail:
+  api:
+    application-name: Smart Web Notification Intelligence Hub
+    max-messages: 50
+    rate-limit:
+      requests-per-second: 10
+      max-retries: 3
+      backoff-multiplier: 2
+
+# ML Service Configuration
+ml:
+  service:
+    url: ${ML_SERVICE_URL:http://localhost:5000}
+    timeout: 5000 # 5 seconds
+    endpoints:
+      classify: /classify
+
+# Rate Limiting Configuration
+rate-limit:
+  requests-per-minute: 100
+  enabled: true
+
+# Logging Configuration
+logging:
+  level:
+    com.swnih: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/swnih.log
+    max-size: 10MB
+    max-history: 30
+
+# Server Configuration
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  error:
+    include-message: always
+    include-binding-errors: always
+
+# Management and Monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# CORS Configuration
+cors:
+  allowed-origins: ${ALLOWED_ORIGINS:http://localhost:3000,http://localhost:8080}
+  allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+  allowed-headers: "*"
+  allow-credentials: true
+
+---
+# Development Profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/swnih_dev_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+
+logging:
+  level:
+    com.swnih: DEBUG
+    org.springframework.security: DEBUG
+
+---
+# Test Profile
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  sql:
+    init:
+      mode: never
+
+---
+# Production Profile
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+logging:
+  level:
+    com.swnih: WARN
+    org.springframework.security: WARN

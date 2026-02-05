@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Authentication</title>
+</head>
+<body>
+    <h1>Debug Authentication</h1>
+    <div id="results"></div>
+    
+    <script>
+        async function debugAuth() {
+            const results = document.getElementById('results');
+            
+            // Check what's in localStorage
+            const token = localStorage.getItem('swnih_token');
+            const user = localStorage.getItem('swnih_user');
+            
+            results.innerHTML += `<h3>LocalStorage:</h3>`;
+            results.innerHTML += `<p>Token: ${token ? token.substring(0, 50) + '...' : 'None'}</p>`;
+            results.innerHTML += `<p>User: ${user || 'None'}</p>`;
+            
+            if (token) {
+                try {
+                    // Test token validation
+                    const response = await fetch('/api/auth/validate', {
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    });
+                    const data = await response.json();
+                    
+                    results.innerHTML += `<h3>Token Validation:</h3>`;
+                    results.innerHTML += `<p>Status: ${response.status}</p>`;
+                    results.innerHTML += `<p>Response: ${JSON.stringify(data, null, 2)}</p>`;
+                    
+                    if (data.success) {
+                        // Test Gmail connect
+                        const gmailResponse = await fetch('/api/gmail/connect', {
+                            headers: { 'Authorization': 'Bearer ' + token }
+                        });
+                        const gmailData = await gmailResponse.json();
+                        
+                        results.innerHTML += `<h3>Gmail Connect:</h3>`;
+                        results.innerHTML += `<p>Status: ${gmailResponse.status}</p>`;
+                        results.innerHTML += `<p>Response: ${JSON.stringify(gmailData, null, 2)}</p>`;
+                    }
+                } catch (error) {
+                    results.innerHTML += `<h3>Error:</h3><p>${error.message}</p>`;
+                }
+            }
+        }
+        
+        debugAuth();
+    </script>
+</body>
+</html>

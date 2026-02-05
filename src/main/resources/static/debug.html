@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="success">✅ SWNIH Debug Page</h1>
+        <p>If you can see this page, the server is working correctly!</p>
+        <ul>
+            <li>Server: Running ✅</li>
+            <li>Static files: Loading ✅</li>
+            <li>CSS: Working ✅</li>
+            <li>HTML: Rendering ✅</li>
+        </ul>
+        <hr>
+        <h2>Next Steps:</h2>
+        <p>Try these URLs:</p>
+        <ul>
+            <li><a href="/">Main Page (index.html)</a></li>
+            <li><a href="/test-simple.html">Simple Test Page</a></li>
+            <li><a href="/debug.html">This Debug Page</a></li>
+        </ul>
+    </div>
+    
+    <script>
+        console.log('Debug page loaded successfully!');
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM ready - everything is working!');
+        });
+    </script>
+</body>
+</html>

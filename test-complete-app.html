@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWNIH Complete App Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover { background: #0056b3; }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <h1>🧠 SWNIH Complete Application Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Test Main Page</h2>
+        <button class="btn" onclick="testMainPage()">Test Main Page</button>
+        <div id="main-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Test Authentication Pages</h2>
+        <button class="btn" onclick="testLoginPage()">Test Login Page</button>
+        <button class="btn" onclick="testRegisterPage()">Test Register Page</button>
+        <div id="auth-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Test User Registration</h2>
+        <button class="btn" onclick="testUserRegistration()">Register Test User</button>
+        <div id="register-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. Test User Login</h2>
+        <button class="btn" onclick="testUserLogin()">Login Test User</button>
+        <div id="login-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>5. Test Dashboard Access</h2>
+        <button class="btn" onclick="testDashboard()">Test Dashboard</button>
+        <div id="dashboard-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>6. Test Gmail Integration</h2>
+        <button class="btn" onclick="testGmailConnect()">Test Gmail Connect</button>
+        <button class="btn" onclick="testGmailStatus()">Test Gmail Status</button>
+        <div id="gmail-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>7. Complete Flow Test</h2>
+        <button class="btn" onclick="runCompleteTest()">Run Complete Test</button>
+        <div id="complete-result"></div>
+    </div>
+
+    <script>
+        let testToken = null;
+        
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="result ${type}">${message}</div>`;
+        }
+        
+        async function testMainPage() {
+            try {
+                const response = await fetch('/');
+                if (response.ok) {
+                    showResult('main-result', '✅ Main page loads successfully', 'success');
+                } else {
+                    showResult('main-result', `❌ Main page failed: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                showResult('main-result', `❌ Main page error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testLoginPage() {
+            try {
+                const response = await fetch('/login');
+                if (response.ok) {
+                    showResult('auth-result', '✅ Login page loads successfully', 'success');
+                } else {
+                    showResult('auth-result', `❌ Login page failed: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                showResult('auth-result', `❌ Login page error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testRegisterPage() {
+            try {
+                const response = await fetch('/register');
+                if (response.ok) {
+                    showResult('auth-result', '✅ Register page loads successfully', 'success');
+                } else {
+                    showResult('auth-result', `❌ Register page failed: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                showResult('auth-result', `❌ Register page error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testUserRegistration() {
+            try {
+                const testUser = {
+                    username: 'testuser' + Date.now(),
+                    email: 'test' + Date.now() + '@example.com',
+                    password: 'TestPassword123'
+                };
+                
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testUser)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult('register-result', `✅ User registered: ${data.username} (${data.email})`, 'success');
+                    // Store for login test
+                    window.testUser = testUser;
+                } else {
+                    showResult('register-result', `❌ Registration failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult('register-result', `❌ Registration error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testUserLogin() {
+            try {
+                if (!window.testUser) {
+                    showResult('login-result', '❌ Please register a test user first', 'error');
+                    return;
+                }
+                
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: window.testUser.email,
+                        password: window.testUser.password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    testToken = data.token;
+                    showResult('login-result', `✅ Login successful: ${data.username} (Token: ${data.token.substring(0, 20)}...)`, 'success');
+                } else {
+                    showResult('login-result', `❌ Login failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult('login-result', `❌ Login error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testDashboard() {
+            try {
+                if (!testToken) {
+                    showResult('dashboard-result', '❌ Please login first to get a token', 'error');
+                    return;
+                }
+                
+                const response = await fetch('/dashboard', {
+                    headers: { 'Authorization': `Bearer ${testToken}` }
+                });
+                
+                if (response.ok) {
+                    showResult('dashboard-result', '✅ Dashboard loads successfully with authentication', 'success');
+                } else {
+                    showResult('dashboard-result', `❌ Dashboard failed: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                showResult('dashboard-result', `❌ Dashboard error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testGmailConnect() {
+            try {
+                if (!testToken) {
+                    showResult('gmail-result', '❌ Please login first to get a token', 'error');
+                    return;
+                }
+                
+                const response = await fetch('/api/gmail/connect', {
+                    headers: { 'Authorization': `Bearer ${testToken}` }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult('gmail-result', `✅ Gmail connect works: ${data.message}`, 'success');
+                } else {
+                    showResult('gmail-result', `❌ Gmail connect failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult('gmail-result', `❌ Gmail connect error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testGmailStatus() {
+            try {
+                if (!testToken) {
+                    showResult('gmail-result', '❌ Please login first to get a token', 'error');
+                    return;
+                }
+                
+                const response = await fetch('/api/gmail/status', {
+                    headers: { 'Authorization': `Bearer ${testToken}` }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult('gmail-result', `✅ Gmail status: ${data.connected ? 'Connected' : 'Not Connected'}`, 'success');
+                } else {
+                    showResult('gmail-result', `❌ Gmail status failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult('gmail-result', `❌ Gmail status error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function runCompleteTest() {
+            showResult('complete-result', '🚀 Running complete application test...', 'info');
+            
+            try {
+                // Test 1: Main page
+                await testMainPage();
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Test 2: Auth pages
+                await testLoginPage();
+                await testRegisterPage();
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Test 3: Registration
+                await testUserRegistration();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Test 4: Login
+                await testUserLogin();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Test 5: Dashboard
+                await testDashboard();
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Test 6: Gmail
+                await testGmailConnect();
+                await testGmailStatus();
+                
+                showResult('complete-result', '✅ Complete application test finished! Check individual results above.', 'success');
+                
+            } catch (error) {
+                showResult('complete-result', `❌ Complete test error: ${error.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>
