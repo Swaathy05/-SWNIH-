@@ -3,7 +3,7 @@
 [![Java](https://img.shields.io/badge/Java-17+-orange.svg)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.1-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Gmail API](https://img.shields.io/badge/Gmail%20API-OAuth%202.0-red.svg)](https://developers.google.com/gmail/api)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 
 > **Transform your email chaos into organized intelligence with AI-powered prioritization**
 
@@ -204,63 +204,8 @@ mvn clean package
 java -jar target/smart-web-notification-intelligence-hub-0.0.1-SNAPSHOT.jar
 ```
 
-### Docker Deployment
-```dockerfile
-FROM openjdk:17-jdk-slim
-COPY target/*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java","-jar","/app.jar"]
-```
-
-## 🤝 Contributing
-
-We welcome contributions! Please follow these steps:
-
-1. **Fork the repository**
-2. **Create a feature branch**
-   ```bash
-   git checkout -b feature/amazing-feature
-   ```
-3. **Commit your changes**
-   ```bash
-   git commit -m 'Add amazing feature'
-   ```
-4. **Push to the branch**
-   ```bash
-   git push origin feature/amazing-feature
-   ```
-5. **Open a Pull Request**
-
-### Development Guidelines
-- Follow Java coding standards
-- Write comprehensive tests
-- Update documentation
-- Ensure responsive design
-- Test Gmail integration thoroughly
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **Spring Boot Team** - For the excellent framework
-- **Google Gmail API** - For email integration capabilities
-- **JWT.io** - For JWT token standards
-- **Modern CSS** - For design inspiration
-
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/Swaathy05/-SWNIH-/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/Swaathy05/-SWNIH-/discussions)
-- **Email**: support@swnih.com
-
----
-
-<div align="center">
-
-**Made with ❤️ by [Swaathy05](https://github.com/Swaathy05)**
 
 ⭐ **Star this repo if you found it helpful!** ⭐
+
 
 </div>
